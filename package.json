@@ -1,0 +1,24 @@
+{
+  "name": "pet-media-manager",
+  "version": "1.0.0",
+  "description": "A full-stack application for managing pet media files",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "build": "cd backend && npm run build",
+    "test": "cd backend && npm test"
+  },
+  "keywords": [
+    "pet",
+    "media",
+    "manager",
+    "graphql",
+    "mongodb",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  }
+}
