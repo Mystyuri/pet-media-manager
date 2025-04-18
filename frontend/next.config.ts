@@ -3,6 +3,7 @@
  */
 const nextConfig = {
   output: 'export',
+  basePath: '/pet-media-manager',
 };
 
 module.exports = nextConfig;
