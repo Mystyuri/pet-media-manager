@@ -14,9 +14,16 @@ import { ContentResolver } from './schemas/resolvers/content-resolvers.js';
 import { graphqlUploadExpress } from 'graphql-upload-minimal';
 import { pubSub } from './schemas/resolvers/subs.js';
 import { useServer } from 'graphql-ws/use/ws';
+import * as https from 'node:https';
+import * as fs from 'node:fs';
+import * as http from 'node:http';
 
 const PORT = process.env.PORT;
 const MONGODB_URI = process.env.MONGODB_URI!;
+
+const HTTPS_LETSENCRYPT_PATH = process.env.HTTPS_LETSENCRYPT_PATH;
+const SERVER_HOST = process.env.SERVER_HOST;
+const IS_PROD = process.env.IS_PROD === 'true';
 
 async function bootstrap() {
   const app = express();
@@ -63,9 +70,25 @@ async function bootstrap() {
   await server.start();
   server.applyMiddleware({ app, path: '/graphql' });
 
-  const httpServer = app.listen(PORT, () => {
-    console.log(`Server ready at http://localhost:${PORT}${server.graphqlPath}`);
-  });
+  let httpServer: http.Server | https.Server;
+
+  if (IS_PROD) {
+    const sslOptions = {
+      key: fs.readFileSync(`${HTTPS_LETSENCRYPT_PATH}/privkey.pem`),
+      cert: fs.readFileSync(`${HTTPS_LETSENCRYPT_PATH}/fullchain.pem`),
+      ca: fs.readFileSync(`${HTTPS_LETSENCRYPT_PATH}/chain.pem`),
+    };
+
+    httpServer = https.createServer(sslOptions, app);
+    httpServer.listen(PORT, () => {
+      console.log(`🚀 HTTPS server ready at https://${SERVER_HOST}:${PORT}${server.graphqlPath}`);
+    });
+  } else {
+    httpServer = app.listen(PORT, () => {
+      console.log(`🚀 HTTP server ready at http://${SERVER_HOST}:${PORT}${server.graphqlPath}`);
+    });
+  }
+
   const wsServer = new WebSocketServer({
     server: httpServer,
     path: '/graphql',
