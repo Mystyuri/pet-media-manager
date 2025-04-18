@@ -5,7 +5,7 @@ WORKDIR /app
 # Установка зависимостей для разработки
 RUN apk add --no-cache python3 make g++
 
-# Копируем package.json и package-lock.json
+# Копируем зависимости
 COPY package*.json ./
 
 # Устанавливаем зависимости

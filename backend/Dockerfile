@@ -20,4 +20,4 @@ RUN mkdir -p uploads
 EXPOSE 4000
 
 # Запускаем сервер в режиме разработки
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "dev"]
