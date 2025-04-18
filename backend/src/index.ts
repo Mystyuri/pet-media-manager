@@ -25,6 +25,8 @@ const HTTPS_LETSENCRYPT_PATH = process.env.HTTPS_LETSENCRYPT_PATH;
 const SERVER_HOST = process.env.SERVER_HOST;
 const IS_PROD = process.env.IS_PROD === 'true';
 
+const https_letsencrypt_path = `${HTTPS_LETSENCRYPT_PATH}${SERVER_HOST}`;
+
 async function bootstrap() {
   const app = express();
 
@@ -74,9 +76,9 @@ async function bootstrap() {
 
   if (IS_PROD) {
     const sslOptions = {
-      key: fs.readFileSync(`${HTTPS_LETSENCRYPT_PATH}/privkey.pem`),
-      cert: fs.readFileSync(`${HTTPS_LETSENCRYPT_PATH}/fullchain.pem`),
-      ca: fs.readFileSync(`${HTTPS_LETSENCRYPT_PATH}/chain.pem`),
+      key: fs.readFileSync(`${https_letsencrypt_path}/privkey.pem`),
+      cert: fs.readFileSync(`${https_letsencrypt_path}/fullchain.pem`),
+      ca: fs.readFileSync(`${https_letsencrypt_path}/chain.pem`),
     };
 
     httpServer = https.createServer(sslOptions, app);
