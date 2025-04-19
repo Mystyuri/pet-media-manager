@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build_git": "env-cmd -f .env.git next build",
     "start": "next start",
     "lint": "next lint",
     "get-schema": "tsx scripts/fetchSchema.ts && graphql-codegen"
