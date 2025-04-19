@@ -7,6 +7,7 @@ const nextConfig = is_git
   ? {
       output: 'export',
       basePath: '/pet-media-manager',
+      trailingSlash: true,
       // assetPrefix: '/pet-media-manager/',
     }
   : {};
