@@ -5,13 +5,14 @@ import { createClient } from 'graphql-ws';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { localStorageToken } from '@/lib/localStorageToken';
+import { API_URL, WS_API_URL } from '../../cfg';
 
 const wsLink =
   typeof window === 'undefined'
     ? null // SSR fallback
     : new GraphQLWsLink(
         createClient({
-          url: process.env.NEXT_PUBLIC_WS_API_URL!,
+          url: WS_API_URL,
           connectionParams: () => ({
             authorization: localStorageToken(),
           }),
@@ -19,7 +20,7 @@ const wsLink =
       );
 
 const uploadLink = createUploadLink({
-  uri: process.env.NEXT_PUBLIC_API_URL!,
+  uri: API_URL,
 });
 
 const authLink = setContext((_, { headers }) => {

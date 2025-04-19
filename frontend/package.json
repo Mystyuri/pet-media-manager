@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build_git": "env-cmd -f .env.git next build",
     "start": "next start",
     "lint": "next lint",
     "get-schema": "tsx scripts/fetchSchema.ts && graphql-codegen"
@@ -39,6 +40,7 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
     "postcss": "^8.4.33",
+    "serve": "^14.2.4",
     "tsx": "^4.19.3",
     "typescript": "^5.3.3"
   }

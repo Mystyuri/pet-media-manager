@@ -2,8 +2,9 @@ import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { getIntrospectionQuery, buildClientSchema, printSchema } from 'graphql/utilities';
+import { API_URL } from '../cfg';
 
-const GRAPHQL_END_POINT_SCHEMA = process.env.NEXT_PUBLIC_API_URL!;
+const GRAPHQL_END_POINT_SCHEMA = API_URL;
 const SCHEMA_PATH: string = path.join(process.cwd(), 'graphql/schema.graphql');
 
 async function fetchSchema(): Promise<void> {
