@@ -6,7 +6,7 @@ import { is_git } from './cfg';
 const nextConfig = is_git
   ? {
       output: 'export',
-      // basePath: '/pet-media-manager',
+      basePath: '/pet-media-manager',
       // assetPrefix: '/pet-media-manager/',
     }
   : {};
