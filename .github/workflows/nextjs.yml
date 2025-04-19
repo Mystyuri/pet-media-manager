@@ -68,6 +68,9 @@ jobs:
       - name: Load environment from .env.git
         run: cat .env.git >> $GITHUB_ENV
 
+      - name: Check environment variables
+        run: echo $NEXT_PUBLIC_GITHUB_PAGES
+
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
 
