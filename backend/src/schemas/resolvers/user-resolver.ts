@@ -8,7 +8,10 @@ export class UserResolver {
   @Query(() => User)
   @Authorized()
   async me(@Ctx('user') userCtx: User) {
-    const user = UserModel.findById(userCtx.id);
+    const user = await UserModel.findById(userCtx.id);
+    if (!user) {
+      throw new GraphQLError('User not found');
+    }
     const token = generateJwt({ id: userCtx.id });
 
     return {
