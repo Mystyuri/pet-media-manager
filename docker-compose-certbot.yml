@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    command: certonly --standalone --non-interactive --agree-tos --email mystyuri@gmail.com -d "${SERVER_HOST}" -d "www.${SERVER_HOST}"
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: "no"
+volumes:
+  letsencrypt:

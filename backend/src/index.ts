@@ -18,12 +18,18 @@ import * as https from 'node:https';
 import * as fs from 'node:fs';
 import * as http from 'node:http';
 
-const PORT = process.env.PORT;
-const MONGODB_URI = process.env.MONGODB_URI!;
+const {
+  MONGODB_USER,
+  MONGODB_PASSWORD,
+  MONGODB_DATABASE,
+  MONGODB_PORT,
+  PORT,
+  HTTPS_LETSENCRYPT_PATH,
+  SERVER_HOST,
+  IS_PROD,
+} = process.env;
 
-const HTTPS_LETSENCRYPT_PATH = process.env.HTTPS_LETSENCRYPT_PATH;
-const SERVER_HOST = process.env.SERVER_HOST;
-const IS_PROD = process.env.IS_PROD === 'true';
+const MONGODB_URI = `mongodb://${MONGODB_USER}:${encodeURIComponent(MONGODB_PASSWORD!)}@localhost:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=${MONGODB_DATABASE}`;
 
 const https_letsencrypt_path = `${HTTPS_LETSENCRYPT_PATH}${SERVER_HOST}`;
 
@@ -31,8 +37,10 @@ async function bootstrap() {
   const app = express();
 
   // Apply middleware
-  app.use(express.json()).use(cors()).use(graphqlUploadExpress());
-  // app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+  app
+    .use(express.json())
+    .use(cors())
+    .use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
 
   // Connect to MongoDB
   try {

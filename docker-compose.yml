@@ -1,6 +1,21 @@
-version: '3.5'
+version: '3.8'
 
 services:
+  proxy:
+    env_file:
+      - .env
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./default.conf.template:/etc/nginx/templates/default.conf.template
+      - ./static_front:/usr/share/nginx/html
+      - letsencrypt:/etc/letsencrypt
+    depends_on:
+      - backend
+    networks:
+      - network1
   frontend:
     build:
       context: ./frontend
@@ -8,7 +23,7 @@ services:
     env_file:
       - .env
     ports:
-      - '${PORT_FRONT}:${PORT_FRONT}'
+      - "${PORT_FRONT}:${PORT_FRONT}"
     restart: always
     volumes:
       - ./frontend:/app
@@ -17,7 +32,7 @@ services:
     networks:
       - network1
     environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_WS_API_URL}
+      NEXT_PUBLIC_API_URL: ${SERVER_PROTOCOL}://${SERVER_HOST}:${PORT}
     depends_on:
       - backend
   backend:
@@ -28,8 +43,9 @@ services:
       - "${PORT}:${PORT}"
     environment:
       # MongoDB
-      MONGODB_URI: mongodb://mongodb:27017/pet-media-manager
-
+      MONGODB_DATABASE: ${MONGODB_DATABASE}
+      MONGODB_ROOT_USER: ${MONGODB_ROOT_USER}
+      MONGODB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
       # AWS S3
       AWS_URL: ${AWS_URL}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -37,14 +53,14 @@ services:
       AWS_REGION: ${AWS_REGION}
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
       AWS_BUCKET_PREFIX: ${AWS_BUCKET_PREFIX}
-
       # JWT
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
-
       # Server
       PORT: ${PORT}
-      NODE_ENV: ${NODE_ENV}
+      # SSL
+      SSL_CERT_PATH: /etc/letsencrypt/live/${SERVER_HOST}/fullchain.pem
+      SSL_KEY_PATH: /etc/letsencrypt/live/${SERVER_HOST}/privkey.pem
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -57,16 +73,19 @@ services:
   mongodb:
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - "${MONGODB_PORT}:${MONGODB_PORT}"
     volumes:
       - mongodb_data:/data/db
     networks:
       - network1
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+
 networks:
   network1:
 
 volumes:
   mongodb_data:
   letsencrypt:
-    external: true
-    name: dev-config_letsencrypt
