@@ -26,7 +26,7 @@ const {
   PORT,
   HTTPS_LETSENCRYPT_PATH,
   SERVER_HOST,
-  IS_PROD,
+  SERVER_PROTOCOL,
 } = process.env;
 
 const MONGODB_URI = `mongodb://${MONGODB_USER}:${encodeURIComponent(MONGODB_PASSWORD!)}@localhost:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=${MONGODB_DATABASE}`;
@@ -82,7 +82,7 @@ async function bootstrap() {
 
   let httpServer: http.Server | https.Server;
 
-  if (IS_PROD) {
+  if (SERVER_PROTOCOL === 'https') {
     const sslOptions = {
       key: fs.readFileSync(`${https_letsencrypt_path}/privkey.pem`),
       cert: fs.readFileSync(`${https_letsencrypt_path}/fullchain.pem`),

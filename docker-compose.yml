@@ -58,6 +58,7 @@ services:
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
       # Server
       PORT: ${PORT}
+      SERVER_PROTOCOL: ${SERVER_PROTOCOL}
       # SSL
       SSL_CERT_PATH: /etc/letsencrypt/live/${SERVER_HOST}/fullchain.pem
       SSL_KEY_PATH: /etc/letsencrypt/live/${SERVER_HOST}/privkey.pem

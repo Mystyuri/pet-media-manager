@@ -10,6 +10,8 @@ const nextConfig = is_git
       trailingSlash: true,
       // assetPrefix: '/pet-media-manager/',
     }
-  : {};
+  : {
+      output: 'export',
+    };
 
 module.exports = nextConfig;
