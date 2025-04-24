@@ -27,10 +27,10 @@ const {
   HTTPS_LETSENCRYPT_PATH,
   SERVER_HOST,
   SERVER_PROTOCOL,
+  IS_DOCKER,
 } = process.env;
 
-const MONGODB_URI = `mongodb://${MONGODB_USER}:${encodeURIComponent(MONGODB_PASSWORD!)}@localhost:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=${MONGODB_DATABASE}`;
-
+const MONGODB_URI = `mongodb://${MONGODB_USER}:${encodeURIComponent(MONGODB_PASSWORD!)}@${IS_DOCKER === 'true' ? 'mongodb' : 'localhost'}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=${MONGODB_DATABASE}`;
 const https_letsencrypt_path = `${HTTPS_LETSENCRYPT_PATH}${SERVER_HOST}`;
 
 async function bootstrap() {
@@ -40,12 +40,12 @@ async function bootstrap() {
   app
     .use(express.json())
     .use(cors())
-    .use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+    .use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }));
 
   // Connect to MongoDB
   try {
     await connect(MONGODB_URI);
-    console.log(`Connected to MongoDB: ${MONGODB_URI}`);
+    console.log(`Connected to MongoDB`);
   } catch (err) {
     console.error('MongoDB connection error:', err);
     process.exit(1);

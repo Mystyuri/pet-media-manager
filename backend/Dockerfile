@@ -14,10 +14,7 @@ RUN npm install
 # Копируем исходный код
 COPY . .
 
-# Создаем директорию для загрузок
-RUN mkdir -p uploads
-
-EXPOSE 4000
+#EXPOSE 4000
 
 # Запускаем сервер в режиме разработки
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]
