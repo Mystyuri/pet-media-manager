@@ -6,10 +6,7 @@ import { FileUpload, GraphQLUpload } from 'graphql-upload-minimal';
 import { S3Service } from '../../services/s3.service.js';
 import { keyToPath } from '../../services/keyToPath.js';
 import { UPLOAD_PROGRESS } from './subs.js';
-
-// Используем PubSub для отправки обновлений о прогрессе
-
-// Константа для идентификатора события
+import { DocumentType } from '@typegoose/typegoose';
 
 @Resolver(Content)
 export class ContentResolver {
@@ -79,11 +76,12 @@ export class ContentResolver {
   }
 
   @FieldResolver(() => String) // Добавляем FieldResolver
-  path(@Root() content: Content): string {
+  path(@Root() content: DocumentType<Content>) {
+    const contentData = content.toObject();
     return keyToPath({
-      key: content.key,
-      filename: content.filename,
-      userId: content.owner,
+      key: contentData.key,
+      filename: contentData.filename,
+      userId: contentData.owner,
     });
   }
 
