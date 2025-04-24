@@ -11,7 +11,6 @@ server {
     listen 80;
     listen [::]:80;
     server_name ${SERVER_HOST} www.${SERVER_HOST};
-    client_max_body_size 100M;
 
     # Редирект на HTTPS (раскомментируй при необходимости)
     # return 301 https://$host$request_uri;
@@ -27,6 +26,8 @@ server {
     location /api/ {
         proxy_pass http://backend:${PORT}/;  # Важно: слэш в конце
         proxy_http_version 1.1;
+        client_max_body_size 10M; # лимит
+        proxy_request_buffering off;  # включается потоковая передача запроса
 
         # WebSocket headers
         proxy_set_header Upgrade $http_upgrade;
