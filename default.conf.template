@@ -1,23 +1,38 @@
+# Устанавливает переменную $connection_upgrade в зависимости от наличия заголовка Upgrade.
+# Это нужно для корректной поддержки WebSocket:
+# - если клиент отправил Upgrade-заголовок (например, при WebSocket-соединении) → установить "upgrade"
+# - если нет → установить "close" (по умолчанию закрыть соединение)
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
 server {
     listen 80;
     listen [::]:80;
     server_name ${SERVER_HOST} www.${SERVER_HOST};
 
-    # Редирект на HTTPS
+    # Редирект на HTTPS (раскомментируй при необходимости)
     # return 301 https://$host$request_uri;
 
+    # Отдача статики + SPA fallback
     location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
         try_files $uri $uri/ /index.html;
     }
 
-    location /api {
-        proxy_pass http://backend:4000/graphql;  # HTTP Express
+    # Обработка WebSocket и API-запросов
+    location /api/ {
+        proxy_pass http://backend:${PORT}/;  # Важно: слэш в конце
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
+
+        # WebSocket headers
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+        proxy_set_header Connection $connection_upgrade;
+
+        # Прочие заголовки
+        proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
