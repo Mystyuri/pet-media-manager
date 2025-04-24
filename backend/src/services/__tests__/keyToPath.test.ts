@@ -61,14 +61,4 @@ describe('keyToPath', () => {
     };
     expect(() => keyToPath(params)).toThrow();
   });
-
-  it('Ошибка env AWS_BUCKET_PREFIX', () => {
-    delete process.env.AWS_BUCKET_PREFIX;
-    const params = {
-      userId: mockObjectId(),
-      key: '1234567890',
-      filename: 'test file.jpg',
-    };
-    expect(() => keyToPath(params)).toThrow();
-  });
 });

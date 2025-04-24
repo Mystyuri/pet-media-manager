@@ -40,8 +40,10 @@ services:
     build: ./backend
     env_file:
       - .env
-    ports:
-      - "${PORT}:${PORT}"
+    deploy:
+      replicas: 2
+    expose:
+      - "${PORT}"
     environment:
       IS_DOCKER: ${IS_DOCKER}
       # MongoDB
@@ -55,6 +57,7 @@ services:
       AWS_REGION: ${AWS_REGION}
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
       AWS_BUCKET_PREFIX: ${AWS_BUCKET_PREFIX}
+      IS_S3_COMPATIBLE: ${IS_S3_COMPATIBLE}
       # JWT
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}

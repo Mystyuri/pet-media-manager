@@ -6,13 +6,14 @@ import { TKeyToPath } from './keyToPath.js';
 import { pubSub } from '../schemas/resolvers/subs.js';
 import { UPLOAD_PROGRESS } from '../schemas/resolvers/subs.js';
 
-const s3 = new S3Client({
-  region: process.env.AWS_REGION!,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
+const s3 = new S3Client(
+  process.env.IS_S3_COMPATIBLE === 'true'
+    ? {
+        endpoint: process.env.AWS_URL!,
+        forcePathStyle: true,
+      }
+    : {},
+);
 
 export class S3Service {
   static async uploadFile(file: FileUpload, userId: ObjectId, size: number) {
@@ -31,7 +32,7 @@ export class S3Service {
       client: s3,
       params: {
         Bucket: process.env.AWS_BUCKET_NAME!,
-        Key: `${process.env.AWS_BUCKET_PREFIX!}/${userId}/${key}-${filename}`,
+        Key: [process.env.AWS_BUCKET_PREFIX, userId, `${key}-${filename}`].filter(Boolean).join('/'),
         Body: fileStream,
         ContentType: mimetype,
         ContentLength: size,
