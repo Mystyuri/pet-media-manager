@@ -40,7 +40,7 @@ async function bootstrap() {
   app
     .use(express.json())
     .use(cors())
-    .use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }));
+    .use(graphqlUploadExpress({ maxFileSize: 100000000, maxFiles: 5 }));
 
   // Connect to MongoDB
   try {
