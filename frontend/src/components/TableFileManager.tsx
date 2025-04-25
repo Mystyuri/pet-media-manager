@@ -1,4 +1,4 @@
-import { Button, FloatButton, Image, message, Table } from 'antd';
+import { FloatButton, Image, Table } from 'antd';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { ColumnsType } from 'antd/es/table';
 import { Content } from '../../graphql/graphql';
@@ -39,9 +39,19 @@ export const TableFileManager = () => {
   const { data, loading } = useQuery(GET_CONTENTS, {
     variables: { offset: (currentPage - 1) * pageSize, limit: pageSize },
   });
+
+  if (data) {
+    if (data.contents.data.length === 0 && currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+
   const total = data?.contents.params.total;
   const [deleteFile, payloadDeleteFile] = useMutation(DELETE_CONTENT, {
-    refetchQueries: [GET_CONTENTS],
+    update: (cache) => {
+      cache.evict({ fieldName: 'contents' });
+      cache.gc();
+    },
     onCompleted: () => {
       setSelectedElements([]);
     },

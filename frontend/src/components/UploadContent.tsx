@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { gql, useMutation, useSubscription } from '@apollo/client';
 import { Button, Flex, Progress, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-
-import { GET_CONTENTS } from '@/components/TableFileManager';
 import Paragraph from 'antd/es/typography/Paragraph';
 
 const UPLOAD_PROGRESS_SUBSCRIPTION = gql`
@@ -24,7 +22,10 @@ const MUTATION = gql`
 export const UploadContent = () => {
   const [progress, setProgress] = useState<{ load: number; save: number } | null>(null);
   const [mutate, { loading }] = useMutation(MUTATION, {
-    refetchQueries: [GET_CONTENTS],
+    update: (cache) => {
+      cache.evict({ fieldName: 'contents' });
+      cache.gc();
+    },
     onCompleted: () => {
       setTimeout(() => setProgress(null), 1000);
     },

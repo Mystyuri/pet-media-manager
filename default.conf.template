@@ -7,8 +7,15 @@ map $http_upgrade $connection_upgrade {
     ''      close;
 }
 
+# Балансировщик для HTTP соединений
 upstream backend_upstream {
-    server backend:${PORT};  # docker swarm распределит между репликами сам
+    server pet-media-manager-backend-1:${PORT};
+    server pet-media-manager-backend-2:${PORT};
+}
+
+# Балансировщик для WS соединений
+upstream websocket_backend {
+    server pet-media-manager-backend-1:${PORT};
 }
 
 server {
@@ -26,21 +33,23 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    # Обработка WebSocket и API-запросов
+    # обычные API-запросы с round-robin
     location /api/ {
-        proxy_pass http://backend_upstream;  # Важно: слэш в конце
+        proxy_pass http://backend_upstream/;
         proxy_http_version 1.1;
-        client_max_body_size 10M; # лимит
-        proxy_request_buffering off;  # включается потоковая передача запроса
-
-        # WebSocket headers
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $connection_upgrade;
-
-        # Прочие заголовки
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 10M;
+        proxy_request_buffering off;
+    }
+
+    # WebSocket без балансировки — напрямую в один из backend'ов
+    location /api/ws/ {
+        proxy_pass http://websocket_backend/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
     }
 }
